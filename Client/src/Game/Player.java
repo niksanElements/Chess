@@ -1,72 +1,91 @@
 package Game;
 
-import Game.Borde.Borde;
-import Game.Figure.*;
+import Game.Listeners.FigureListener;
 
+import java.awt.*;
+
+/**
+ * Created by Nikolay on 12/22/2016.
+ */
 public class Player {
-    private Color color;
 
-    private Pawn[] pawns  = new Pawn[Borde.SIZE_BORDE];
-    private Horse leftHorse;
-    private Horse rightHorse;
-    private Top leftTop;
-    private Top rightTop;
-    private Officer leftOfficer;
-    private Officer rightOfficer;
-    private Queen queen;
-    private King king;
+    public static final int PAWNS_SIZE = 8;
 
-    public Player(Color color){
-        this.color = color;
-        if(color == Color.White) {
-            for (int i = 0; i < Borde.SIZE_BORDE; i++) {
-                this.pawns[i] = new Pawn(1, i);
+    private Figure king; // 04 or 74
+    private Figure queen;// 03 or 73
+    private Figure top1;// 00 or 70
+    private Figure top2;// 07 or 77
+    private Figure officer1; // 02 or 72
+    private Figure officer2;// 05 or 75
+    private Figure horse1;// 01 or 71
+    private Figure horse2; // 06 or 76
+    private Figure[] pawns; // row 1 or row 6
+
+    private Borde borde;
+
+    public Player(Borde borde,Color color,boolean isUp){
+        this.borde = borde;
+        init(color);
+        place(isUp);
+        initListeners();
+    }
+
+    private void initListeners() {
+        king.addMouseListener(new FigureListener(borde));
+        queen.addMouseListener(new FigureListener(borde));
+        top1.addMouseListener(new FigureListener(borde));
+        top2.addMouseListener(new FigureListener(borde));
+        officer1.addMouseListener(new FigureListener(borde));
+        officer2.addMouseListener(new FigureListener(borde));
+        horse1.addMouseListener(new FigureListener(borde));
+        horse2.addMouseListener(new FigureListener(borde));
+        for(int i = 0;i < PAWNS_SIZE;i++){
+            pawns[i].addMouseListener(new FigureListener(borde));
+        }
+    }
+
+    private void place(boolean isUp) {
+        if(isUp){
+            borde.add(king,new Point(7,4));
+            borde.add(queen,new Point(7,3));
+            borde.add(top1,new Point(7,0));
+            borde.add(top2,new Point(7,7));
+            borde.add(officer1,new Point(7,2));
+            borde.add(officer2,new Point(7,5));
+            borde.add(horse1,new Point(7,1));
+            borde.add(horse2,new Point(7,6));
+            for(int i =0;i < PAWNS_SIZE;i++){
+                borde.add(pawns[i],new Point(6,i));
+                pawns[i].setUp(isUp);
             }
-            this.leftOfficer = new Officer(0, 0);
-            this.rightOfficer = new Officer(0, 7);
-            this.leftHorse = new Horse(0, 1);
-            this.rightHorse = new Horse(0, 6);
-            this.leftTop = new Top(0, 2);
-            this.rightTop = new Top(0, 5);
-            this.queen = new Queen(0, 3);
-            this.king = new King(0, 4);
-        }
-        else{
-            for (int i = 0; i < Borde.SIZE_BORDE; i++) {
-                this.pawns[i] = new Pawn(6, i);
+        } else {
+            borde.add(king,new Point(0,4));
+            borde.add(queen,new Point(0,3));
+            borde.add(top1,new Point(0,0));
+            borde.add(top2,new Point(0,7));
+            borde.add(officer1,new Point(0,2));
+            borde.add(officer2,new Point(0,5));
+            borde.add(horse1,new Point(0,1));
+            borde.add(horse2,new Point(0,6));
+            for(int i =0;i < PAWNS_SIZE;i++){
+                borde.add(pawns[i],new Point(1,i));
+                pawns[i].setUp(isUp);
             }
-            this.leftOfficer = new Officer(7, 0);
-            this.rightOfficer = new Officer(7, 7);
-            this.leftHorse = new Horse(7, 1);
-            this.rightHorse = new Horse(7, 6);
-            this.leftTop = new Top(7, 2);
-            this.rightTop = new Top(7, 5);
-            this.queen = new Queen(7, 3);
-            this.king = new King(7, 4);
         }
     }
 
-    public Pawn getPawn(int index){
-        if(index < Borde.SIZE_BORDE){
-            throw new IndexOutOfBoundsException();
+    private void init(Color color) {
+        king = new Figure(Element.King,color);
+        queen = new Figure(Element.Queen,color);
+        top1 = new Figure(Element.Top,color);
+        top2 = new Figure(Element.Top,color);
+        officer1 = new Figure(Element.Officer,color);
+        officer2 = new Figure(Element.Officer,color);
+        horse1 = new Figure(Element.Horse, color);
+        horse2 = new Figure(Element.Horse,color);
+        pawns = new Figure[PAWNS_SIZE];
+        for(int i = 0;i < PAWNS_SIZE;i++){
+            pawns[i] = new Figure(Element.Pawn,color);
         }
-        return this.pawns[index];
     }
-    public Horse getLeftHorse(){return this.leftHorse;}
-    public Horse getRightHorse(){return this.rightHorse;}
-    public Top getLeftTop(){return this.leftTop;}
-    public  Top getRightTop(){return this.rightTop;}
-    public Officer getLeftOfficer(){return this.leftOfficer;}
-    public Officer getRightOfficer(){return this.rightOfficer;}
-    public Queen getQueen(){return this.queen;}
-    public King getKing(){return this.king;}
-
-    public Figure[] getAll(){
-        Figure[] figures  = new Figure[]{
-            pawns[0],pawns[1],pawns[2],pawns[3],pawns[4],pawns[5],pawns[6],pawns[7],
-            leftOfficer,leftHorse,leftTop,queen,king,rightTop,rightHorse,rightOfficer};
-
-        return figures;
-    }
-
 }
